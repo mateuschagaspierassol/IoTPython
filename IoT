@@ -1,0 +1,71 @@
+import random
+import time
+import requests
+
+# Função para gerar dados fictícios
+def generate_sensor_data():
+    return {
+        'water_usage': random.uniform(10.0, 100.0),  # Exemplo: 10.0 a 100.0 litros
+        'energy_usage': random.uniform(50.0, 500.0),  # Exemplo: 50.0 a 500.0 kWh
+        'material_usage': random.uniform(5.0, 50.0)  # Exemplo: 5.0 a 50.0 kg
+    }
+
+# URL do endpoint para enviar os dados
+DATA_URL = 'https://example.com/api/send_data'  # URL do serviço de nuvem
+
+while True:
+    data = generate_sensor_data()
+    response = requests.post(DATA_URL, json=data)
+    
+    if response.status_code == 200:
+        print("Dados enviados com sucesso!")
+    else:
+        print("Falha no envio dos dados.")
+    
+    time.sleep(60)  # Espera de 60 segundos antes de enviar os próximos dados
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Função para obter dados do banco de dados
+def fetch_data():
+    response = requests.get('https://example.com/api/get_data')  # URL do serviço de nuvem
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Falha na obtenção dos dados.")
+        return []
+
+# Função para gerar relatórios
+def generate_report(data):
+    df = pd.DataFrame(data)
+    
+    # Cálculo de estatísticas
+    report = {
+        'water_usage_mean': df['water_usage'].mean(),
+        'energy_usage_mean': df['energy_usage'].mean(),
+        'material_usage_mean': df['material_usage'].mean(),
+        'water_usage_max': df['water_usage'].max(),
+        'energy_usage_max': df['energy_usage'].max(),
+        'material_usage_max': df['material_usage'].max(),
+    }
+    
+    # Geração de gráficos
+    df.plot(kind='line', title='Uso de Recursos ao Longo do Tempo')
+    plt.xlabel('Tempo')
+    plt.ylabel('Uso de Recursos')
+    plt.legend(['Água', 'Energia', 'Matéria-prima'])
+    plt.savefig('report.png')
+    
+    return report
+
+# Obtenção dos dados
+data = fetch_data()
+
+# Geração do relatório
+if data:
+    report = generate_report(data)
+    print("Relatório gerado com sucesso!")
+    print(report)
+else:
+    print("Nenhum dado disponível para gerar relatório.")
